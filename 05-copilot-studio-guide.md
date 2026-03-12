@@ -1,9 +1,10 @@
 # Copilot Studio Integration with Azure AI Search FAQ Index
 
 This guide explains how to connect the `faq-index` Azure AI Search index
-to a Copilot Studio agent using an **Agent Flow** with an **HTTP action**
-for cross-lingual vector search and dynamic metadata filtering, so FAQ
-answers are scoped to the user's Location, Department, and Category context.
+to a Copilot Studio agent using an **Agent Flow** registered as a **Tool**
+(action) with an **HTTP action** for cross-lingual vector search and dynamic
+metadata filtering, so FAQ answers are scoped to the user's Location,
+Department, and Category context.
 
 ---
 
@@ -234,27 +235,38 @@ LLM orchestrator, which is able to parse the JSON and compose a
 natural-language answer. No intermediate Parse JSON or Select/Join actions
 are required.
 
-## Step 4: Wire the Agent Flow into a Topic
+## Step 4: Register the Agent Flow as a Tool
 
-1. Create or edit a topic that triggers on FAQ-related questions
-2. Add **Question** nodes to collect context if not already known:
-   - "What region are you in?" → store in `userLocation`
-   - "What department are you in?" → store in `userDepartment`
-3. Alternatively, populate these from the **authenticated user's profile**
-   (Entra ID claims like `officeLocation`, `department`)
-4. Add a **Call an action** node → select the Agent Flow
-5. Map the inputs:
-   - `searchQuery` ← the user's message
-   - `userLocation` ← `userLocation` variable (or `*` when unknown)
-   - `userDepartment` ← `userDepartment` variable (or `*` when unknown)
-   - `userCategory` ← category variable (or `*`)
-6. Add a **Message** node that passes `searchResults` to the generative AI
-   orchestrator to compose a natural-language answer
+Instead of wiring the flow into a topic, register it as a **Tool** (action)
+so the agent's orchestrator can invoke it autonomously whenever a user asks
+an FAQ-related question.
+
+1. In your agent, go to **Actions** (left nav) — the Agent Flow you
+   created in Step 3 should already appear in the list
+2. Click the flow name to open its **details / configuration** pane
+3. Verify the **inputs** and **outputs** are visible:
+   - Inputs: `searchQuery`, `userLocation`, `userDepartment`, `userCategory`
+   - Output: `searchResults`
+4. Toggle the action **On** (enabled) if it is not already
+
+The agent's LLM orchestrator will now automatically decide when to call
+this tool based on the user's message and the agent instructions you
+configured in Step 2. It will:
+- Extract the search query from the user's message
+- Infer or ask for Location / Department / Category context
+- Call the Agent Flow with the appropriate parameters
+- Compose a natural-language answer from the JSON response
+
+> **Tip:** You do **not** need to create a dedicated topic or question
+> nodes. The orchestrator handles parameter extraction and tool invocation
+> based on the agent instructions alone. If the user doesn't provide
+> context (e.g. location), the agent will either ask or pass `*` depending
+> on how you worded the instructions.
 
 ## Step 5: Test in the Flow Designer
 
-Before wiring the flow into a topic, test it directly in the Power Automate
-designer using the **Test** button (top-right).
+Test the flow directly in the Power Automate designer using the **Test**
+button (top-right) before testing the full agent.
 
 1. Click **Test** → **Manually** → **Run flow**
 2. Enter sample values:
@@ -312,5 +324,5 @@ Location eq 'Europe' and Department eq 'HR' and Category eq 'HR'
 | Filter returns empty | Ensure Location/Department/Category values in the filter match the index data exactly. Check available values with `dotnet run -- test-search` (facets section). |
 | Vector search not working | Confirm the integrated vectorizer (`oai-vectorizer`) is configured on the index and the search service's managed identity has the **Cognitive Services OpenAI User** role on the Azure OpenAI resource. |
 | Semantic ranking not working | Semantic ranking requires **Basic** tier or higher for AI Search. On the Free tier, omit `queryType`/`semanticConfiguration` and rely on vector + keyword hybrid search instead. |
-| Agent doesn't ask for context | Verify the topic has Question nodes or is reading from user profile claims. |
+| Agent doesn't ask for context | Check the agent instructions (Step 2) — the orchestrator infers when to ask based on the instruction text. Make the instructions explicit about when to ask for Location/Department. |
 | "URI path is not a valid Graph endpoint" | You used the **Office 365 HTTP** action, which only works with Microsoft Graph. Switch to the plain **HTTP** action (Built-in/Premium). |

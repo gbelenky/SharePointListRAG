@@ -276,8 +276,9 @@ fabricating one.
 ## Step 6: Connect to Copilot Studio
 
 See [05-copilot-studio-guide.md](05-copilot-studio-guide.md) for step-by-step
-instructions to build an **Agent Flow** in [Copilot Studio](https://learn.microsoft.com/microsoft-copilot-studio/fundamentals-what-is-copilot-studio) that calls the
-AI Search REST API via an **HTTP action** with:
+instructions to build an **Agent Flow** in [Copilot Studio](https://learn.microsoft.com/microsoft-copilot-studio/fundamentals-what-is-copilot-studio) and register it as a
+**Tool** (action) for the agent. The flow calls the AI Search REST API via an
+**HTTP action** with:
 - **Cross-lingual vector search** — uses the integrated vectorizer so plain-text
   queries (in any language) are converted to vectors server-side
 - **Dynamic OData pre-filtering** — scopes results by Location, Department,
@@ -302,9 +303,10 @@ AI Search REST API via an **HTTP action** with:
   "When an item is created or modified" trigger that generates an embedding
   (HTTP call to Azure OpenAI) and uploads the document to the search index
   (HTTP call to the AI Search REST API).
-- **Topic wiring in Copilot Studio** — Create a topic that collects the
-  user's Location and Department (via question nodes or Entra ID profile
-  claims) and calls the Agent Flow automatically.
+- **Enhance agent instructions** — Refine the Copilot Studio agent
+  instructions so the orchestrator collects Location and Department from
+  the user (or reads them from Entra ID profile claims) before invoking
+  the search Tool.
 - **Agent publishing** — Publish the Copilot Studio agent to Teams, a web
   channel, or other supported channels.
 
