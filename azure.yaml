@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: sharepoint-list-search
+metadata:
+  template: sharepoint-list-search
+infra:
+  provider: bicep
+  path: infra
+hooks:
+  postprovision:
+    windows:
+      shell: pwsh
+      run: infra/post-provision.ps1
+    posix:
+      shell: bash
+      run: infra/post-provision.sh

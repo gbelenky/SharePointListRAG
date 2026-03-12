@@ -1,0 +1,22 @@
+# ── Secrets & environment ──────────────────────────────────────────
+.env
+
+# ── Azure Developer CLI ───────────────────────────────────────────
+.azure/
+
+# ── .NET build output ─────────────────────────────────────────────
+src/bin/
+src/obj/
+
+# ── Visual Studio / VS Code ──────────────────────────────────────
+.vs/
+.vscode/
+
+# ── OS files ──────────────────────────────────────────────────────
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ── User-specific files ──────────────────────────────────────────
+*.user
+*.suo
