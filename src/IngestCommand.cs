@@ -83,11 +83,23 @@ public sealed class IngestCommand
         }
 
         // ---- 5. Build FaqDocuments ----
+        // Construct the base URL for linking back to individual SharePoint list items.
+        // Format: https://{host}/sites/{path}/Lists/{encodedListName}/DispForm.aspx?ID={numericId}
+        var listDisplayName = config.SharePointListName;
+        var encodedListName = Uri.EscapeDataString(listDisplayName).Replace("+", "%20");
+        var siteBaseUrl = $"https://{config.SharePointSiteHostname}{config.SharePointSitePath}";
+
         var documents = new List<FaqDocument>();
         foreach (var item in items)
         {
             var fields = item.Fields?.AdditionalData;
             if (fields == null) continue;
+
+            // The numeric list-item ID used in DispForm.aspx is item.Id from Graph
+            var numericId = item.Id;
+            var itemUrl = string.IsNullOrEmpty(numericId)
+                ? string.Empty
+                : $"{siteBaseUrl}/Lists/{encodedListName}/DispForm.aspx?ID={numericId}";
 
             documents.Add(new FaqDocument
             {
@@ -99,7 +111,8 @@ public sealed class IngestCommand
                 Language = GetField(fields, "Language"),
                 Location = GetField(fields, "Location"),
                 Department = GetField(fields, "Department"),
-                LastReviewed = GetDateField(fields, "LastReviewed")
+                LastReviewed = GetDateField(fields, "LastReviewed"),
+                ItemUrl = itemUrl
             });
         }
 

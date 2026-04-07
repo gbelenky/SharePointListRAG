@@ -35,6 +35,9 @@ public sealed class FaqDocument
     [SimpleField(IsFilterable = true, IsSortable = true)]
     public DateTimeOffset? LastReviewed { get; set; }
 
+    [SimpleField(IsFilterable = false)]
+    public string ItemUrl { get; set; } = string.Empty;
+
     [VectorSearchField(VectorSearchDimensions = 1536, VectorSearchProfileName = "hnsw-profile")]
     public IReadOnlyList<float>? ContentVector { get; set; }
 }

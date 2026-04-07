@@ -40,7 +40,7 @@ public sealed class TestSearchCommand
         var keywordOptions = new SearchOptions
         {
             Size = 5,
-            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department" },
+            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department", "ItemUrl" },
             IncludeTotalCount = true
         };
         await RunSearchAsync(searchClient, query, keywordOptions);
@@ -52,7 +52,7 @@ public sealed class TestSearchCommand
         var vectorOptions = new SearchOptions
         {
             Size = 5,
-            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department" },
+            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department", "ItemUrl" },
             VectorSearch = new()
             {
                 Queries =
@@ -76,7 +76,7 @@ public sealed class TestSearchCommand
         var hybridOptions = new SearchOptions
         {
             Size = 5,
-            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department" },
+            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department", "ItemUrl" },
             VectorSearch = new()
             {
                 Queries =
@@ -99,7 +99,7 @@ public sealed class TestSearchCommand
         var filteredOptions = new SearchOptions
         {
             Size = 5,
-            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department" },
+            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department", "ItemUrl" },
             Filter = "Language eq 'en' and Department eq 'IT'",
             VectorSearch = new()
             {
@@ -123,7 +123,7 @@ public sealed class TestSearchCommand
         var semanticOptions = new SearchOptions
         {
             Size = 5,
-            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department" },
+            Select = { "Id", "Title", "Question", "Answer", "Language", "Location", "Department", "ItemUrl" },
             VectorSearch = new()
             {
                 Queries =
@@ -183,6 +183,8 @@ public sealed class TestSearchCommand
             Console.WriteLine($"        Question:   {Truncate(doc.Question, 80)}");
             Console.WriteLine($"        Answer:     {Truncate(doc.Answer, 80)}");
             Console.WriteLine($"        Language:   {doc.Language}  |  Location: {doc.Location}  |  Dept: {doc.Department}");
+            if (!string.IsNullOrEmpty(doc.ItemUrl))
+                Console.WriteLine($"        URL:        {doc.ItemUrl}");
 
             if (result.SemanticSearch?.Captions is { Count: > 0 } captions)
             {
