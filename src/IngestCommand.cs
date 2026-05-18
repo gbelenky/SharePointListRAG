@@ -84,10 +84,10 @@ public sealed class IngestCommand
 
         // ---- 5. Build FaqDocuments ----
         // Construct the base URL for linking back to individual SharePoint list items.
-        // Format: https://{host}/sites/{path}/Lists/{encodedListName}/DispForm.aspx?ID={numericId}
+        // Use site.WebUrl from the Graph response (not config) so the URL is always correct per-site.
         var listDisplayName = config.SharePointListName;
         var encodedListName = Uri.EscapeDataString(listDisplayName).Replace("+", "%20");
-        var siteBaseUrl = $"https://{config.SharePointSiteHostname}{config.SharePointSitePath}";
+        var siteBaseUrl = site.WebUrl!.TrimEnd('/');
 
         var documents = new List<FaqDocument>();
         foreach (var item in items)

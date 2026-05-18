@@ -20,3 +20,4 @@ Desktop.ini
 # ── User-specific files ──────────────────────────────────────────
 *.user
 *.suo
+*.lscache
